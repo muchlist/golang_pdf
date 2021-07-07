@@ -10,13 +10,21 @@ import (
 )
 
 func main() {
-	m := pdf.NewMaroto(consts.Portrait, consts.A4)
-	m.SetPageMargins(20, 10, 20)
+	m := pdf.NewMaroto(consts.Landscape, consts.A4)
+	m.SetPageMargins(10, 10, 10)
 
 	buildHeading(m)
-	buildBody(m)
-	buildImage(m)
-	buildSignature(m)
+
+	buildCompletedList(m)
+	m.Row(10, func() {
+	})
+	buildProgressList(m)
+	m.Row(10, func() {
+	})
+	buildPendingList(m)
+	m.Row(10, func() {
+	})
+	buildCheckList(m)
 
 	err := m.OutputFileAndClose("pdf/test.pdf")
 	if err != nil {
@@ -42,115 +50,201 @@ func buildHeading(m pdf.Maroto) {
 			}
 		})
 		m.Col(8, func() {
-			textH1(m, "Surat Tilang Elektronik TPKB")
-			textBodyCenter(m, "Aplikasi ETI Pelindo III Banjarmasin", 12)
+			textH1(m, "Rekap Laporan IT Regional Kalimantan")
+			textBodyCenter(m, "Dari 7 Jul 08:00 sd 7 Jul 16:00", 12)
 		})
 		m.ColSpace(2)
 	})
 }
 
-func buildBody(m pdf.Maroto) {
-	m.Row(5, func() {
+func buildCompletedList(m pdf.Maroto) {
+	tableHeading := []string{"Nama", "Kategori", "Keterangan", "Status", "Update", "Oleh"}
+	contents := [][]string{
+		{"GATE IN 1 TPKB", "GATE", "restart mingguan", "Completed", "7 Jul 12:25", "muchlis"},
+	}
+	lightPurpleColor := getLightPurpleColor()
 
-	})
-	m.Row(15, func() {
-		m.Col(8, func() {
-			textH2(m, "Identifikasi Pelanggaran", 3)
-		})
-		m.Col(4, func() {
-			textH2(m, "     [sangsi]", 3)
-		})
-	})
-	m.Row(40, func() {
-		m.Col(4, func() {
-			textBody(m, "ID Truck / Nomer Lambung", 0)
-			textBody(m, "Nomor Polisi", 5)
-			textBody(m, "Lokasi", 10)
-			textBody(m, "Tanggal", 15)
-			textBody(m, "Pelanggaran ke-", 20)
-			textBody(m, "Detail Pelanggaran", 25)
-		})
-		m.Col(4, func() {
-			textBody(m, "0000000", 0)
-			textBody(m, "DA 12345 KH", 5)
-			textBody(m, "TPKB", 10)
-			textBody(m, "29 Desember 2021 , 09:00 Wita", 15)
-			textBody(m, "2", 20)
-			textBody(m, "Sopir turun dilokasi bongkar , dan sopir tidak menggunakan apd", 25)
-		})
-		m.ColSpace(1)
-		m.Col(3, func() {
-			textBody(m, "Diberikan teguran ke dua (2), apabila melakukan pelanggaran 1 kali lagi di tahun yang sama maka akan dilakukan pemblokiran saat gate in pada truck dengan tersenbut", 0)
-		})
-	})
-}
-
-func buildImage(m pdf.Maroto) {
-	m.Row(5, func() {
-
-	})
-	m.Row(10, func() {
+	m.SetBackgroundColor(getTealColor())
+	m.Row(9, func() {
 		m.Col(12, func() {
-			textH2(m, "Lampiran", 3)
+			m.Text(" Completed", props.Text{
+				Top:             2,
+				Family:          consts.Courier,
+				Style:           consts.Bold,
+				Size:            12,
+				Align:           consts.Left,
+				VerticalPadding: 0,
+				Color:           color.NewWhite(),
+			})
 		})
 	})
-	m.Row(60, func() {
-		m.Col(4, func() {
-			err := m.FileImage("static/images/download.jpg", props.Rect{
-				Percent: 90,
-				Center:  true,
-			})
-			if err != nil {
-				fmt.Println("Image tidak dapat di download")
-			}
-		})
-		m.Col(4, func() {
-			err := m.FileImage("static/images/download.jpg", props.Rect{
-				Percent: 90,
-				Center:  true,
-			})
-			if err != nil {
-				fmt.Println("Image tidak dapat di download")
-			}
-		})
-		m.Col(4, func() {
-			err := m.FileImage("static/images/portrait.png", props.Rect{
-				Percent: 90,
-				Center:  true,
-			})
-			if err != nil {
-				fmt.Println("Image tidak dapat di download")
-			}
-		})
+	m.SetBackgroundColor(color.NewWhite())
+	m.TableList(tableHeading, contents, props.TableList{
+		HeaderProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{2, 1, 5, 1, 2, 1},
+		},
+		ContentProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{2, 1, 5, 1, 2, 1},
+		},
+		Align:                consts.Left,
+		AlternatedBackground: &lightPurpleColor,
+		HeaderContentSpace:   1,
+		Line:                 true,
 	})
 }
 
-func buildSignature(m pdf.Maroto) {
-	m.Row(10, func() {
+func buildProgressList(m pdf.Maroto) {
+	tableHeading := []string{"Nama", "Kategori", "Keterangan", "Status", "Update", "Oleh"}
+	contents := [][]string{
+		{"E-BOARDING", "APPLICATION", "aplikasi Roro, kapal niki sae tidak bisa approval karna tgl kedatangan kapal tidak sesuai\n\nsudah di lakukan perubahan tgl kedatangan di permohonan, perencanaan, dan realisasi tetapi di menu pranota tgl masih salah ( di teruskan ke PIC pusat ardian masih di cek) ", "Progress", "06 Jul 22:04", "gema"},
+		{"VASA", "APPLICATION", "Ipad pandu pilot00066 an Cecilia Kusuma.  tidak bisa membaca ais plug", "Progress", "6 Jul 16:08", "Muchlis"},
+		{"GATE MARBA", "GATE", "Permintaaan pemindahan sementara komputer dan perangkat di gate in marba karna ada proses renovasi Gate (peninggian lantai gate) meja di pindah ke belakang dekat dengan meja gate out atau meja di mundurkan", "Progress", "4 Jul 15:53", "gema"},
+		{"CCTV RTG", "OTHER", "Masih Problem RTG16 layar hidup mati ( sudah di cek kemungkinan adaptor layar CCTV bermasalah) tidak ada backup adaptor", "Progress", "29 Jun 23:10", "gema"},
+	}
+	lightPurpleColor := getLightPurpleColor()
 
-	})
-	m.Row(8, func() {
-		m.ColSpace(8)
-		m.Col(4, func() {
-			textBodyCenter(m, "Banjarmain 19 - 06 -2021", 0)
-		})
-	})
-	m.Row(25, func() {
-		m.ColSpace(8)
-		m.Col(4, func() {
-			m.QrCode("testbarcode", props.Rect{
-				Top:     0,
-				Percent: 100,
-				Center:  true,
+	m.SetBackgroundColor(getOrangeColor())
+	m.Row(9, func() {
+		m.Col(12, func() {
+			m.Text(" Progress", props.Text{
+				Top:             2,
+				Family:          consts.Courier,
+				Style:           consts.Bold,
+				Size:            12,
+				Align:           consts.Left,
+				VerticalPadding: 0,
+				Color:           color.NewWhite(),
 			})
 		})
 	})
-	m.Row(10, func() {
-		m.ColSpace(8)
-		m.Col(4, func() {
-			textBodyCenter(m, "HSSE TPKB", 5)
+	m.SetBackgroundColor(color.NewWhite())
+	m.TableList(tableHeading, contents, props.TableList{
+		HeaderProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{2, 1, 5, 1, 2, 1},
+		},
+		ContentProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{2, 1, 5, 1, 2, 1},
+		},
+		Align:                consts.Left,
+		AlternatedBackground: &lightPurpleColor,
+		HeaderContentSpace:   1,
+		Line:                 true,
+	})
+}
+
+func buildPendingList(m pdf.Maroto) {
+	tableHeading := []string{"Nama", "Kategori", "Keterangan", "Status", "Update", "Oleh"}
+	contents := [][]string{
+		{"PC VOICE RECORDER", "SERVER", "Sengaja dimatikan karena floading ke server cloud pusat", "Pending", "30 Juni 23:38", "Muchlis"},
+		{"ALTAI 18", "ALTAI", "ALTAI", "Pending", "29 Jun 14:35", "Muchlis"},
+		{"CY5 PARKIRAN BELAKANG - C091", "CCTV", "Indikasi terkena rembesan air hujan pasca ada renovasi di gedung tpkb, cctv sdh diturunkan vendor teknik dan menunggu cctv pengganti\npengecekan menggunakan poe baru indikatornya mati hidup mati hidup lampunya\nunutk koneksi ke server aman", "Pending", "27 Jun 05:52", "Admin"},
+	}
+	lightPurpleColor := getLightPurpleColor()
+
+	m.SetBackgroundColor(getPinkColor())
+	m.Row(9, func() {
+		m.Col(12, func() {
+			m.Text(" Pending", props.Text{
+				Top:             2,
+				Family:          consts.Courier,
+				Style:           consts.Bold,
+				Size:            12,
+				Align:           consts.Left,
+				VerticalPadding: 0,
+				Color:           color.NewWhite(),
+			})
 		})
 	})
+	m.SetBackgroundColor(color.NewWhite())
+	m.TableList(tableHeading, contents, props.TableList{
+		HeaderProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{2, 1, 5, 1, 2, 1},
+		},
+		ContentProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{2, 1, 5, 1, 2, 1},
+		},
+		Align:                consts.Left,
+		AlternatedBackground: &lightPurpleColor,
+		HeaderContentSpace:   1,
+		Line:                 true,
+	})
+}
+
+func buildCheckList(m pdf.Maroto) {
+	tableHeading := []string{"Judul", "Lokasi", "Keterangan", "kendala", "Cek"}
+	contents := [][]string{
+		{"CEK RECORDING SERVICE SERVER CCTV", "SERVER Regional", "record Service aman, milestone web sementara dimatikan sedang ada penghapusan disk F dan G", "Nihil", "06:00"},
+		{"CEK BENSIN MOBIL", "LAINNYA Lainnya", "", "Nihil", "07:00"},
+	}
+	lightPurpleColor := getLightPurpleColor()
+
+	m.SetBackgroundColor(getTealColor())
+	m.Row(9, func() {
+		m.Col(12, func() {
+			m.Text(" CheckList", props.Text{
+				Top:             2,
+				Family:          consts.Courier,
+				Style:           consts.Bold,
+				Size:            12,
+				Align:           consts.Left,
+				VerticalPadding: 0,
+				Color:           color.NewWhite(),
+			})
+		})
+	})
+	m.SetBackgroundColor(color.NewWhite())
+	m.TableList(tableHeading, contents, props.TableList{
+		HeaderProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{4, 1, 4, 1, 2},
+		},
+		ContentProp: props.TableListContent{
+			Size:      9,
+			GridSizes: []uint{4, 1, 4, 1, 2},
+		},
+		Align:                consts.Left,
+		AlternatedBackground: &lightPurpleColor,
+		HeaderContentSpace:   1,
+		Line:                 true,
+	})
+}
+
+func getTealColor() color.Color {
+	return color.Color{
+		Red:   3,
+		Green: 166,
+		Blue:  166,
+	}
+}
+
+func getOrangeColor() color.Color {
+	return color.Color{
+		Red:   255,
+		Green: 153,
+		Blue:  51,
+	}
+}
+
+func getPinkColor() color.Color {
+	return color.Color{
+		Red:   255,
+		Green: 51,
+		Blue:  153,
+	}
+}
+
+func getLightPurpleColor() color.Color {
+	return color.Color{
+		Red:   210,
+		Green: 200,
+		Blue:  230,
+	}
 }
 
 func textH1(m pdf.Maroto, text string) {
@@ -160,29 +254,7 @@ func textH1(m pdf.Maroto, text string) {
 		Size:        18,
 		Align:       consts.Center,
 		Extrapolate: true,
-		Color:       getDarkPurpleColor(),
-	})
-
-}
-
-func textH2(m pdf.Maroto, text string, top float64) {
-
-	m.Text(text, props.Text{
-		Top:         top,
-		Extrapolate: false,
-		Style:       consts.Bold,
-		Size:        14,
-		Color:       getDarkPurpleColor(),
-	})
-
-}
-
-func textBody(m pdf.Maroto, text string, top float64) {
-
-	m.Text(text, props.Text{
-		Top:         top,
-		Extrapolate: false,
-		Color:       getDarkPurpleColor(),
+		Color:       getDarkColor(),
 	})
 
 }
@@ -193,15 +265,23 @@ func textBodyCenter(m pdf.Maroto, text string, top float64) {
 		Top:         top,
 		Extrapolate: false,
 		Align:       consts.Center,
-		Color:       getDarkPurpleColor(),
+		Color:       getDarkGreyColor(),
 	})
 
 }
 
-func getDarkPurpleColor() color.Color {
+func getDarkGreyColor() color.Color {
 	return color.Color{
-		Red:   88,
-		Green: 80,
-		Blue:  99,
+		Red:   83,
+		Green: 83,
+		Blue:  83,
+	}
+}
+
+func getDarkColor() color.Color {
+	return color.Color{
+		Red:   36,
+		Green: 36,
+		Blue:  36,
 	}
 }
